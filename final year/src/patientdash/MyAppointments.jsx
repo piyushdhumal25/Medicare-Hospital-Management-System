@@ -41,7 +41,7 @@ const MyAppointments = () => {
       <h2 className="text-3xl font-extrabold text-blue-800 text-center mb-8 tracking-wide uppercase">
         My Appointments
       </h2>
-                    
+
       <div className="overflow-x-auto shadow-lg rounded-lg">
         <table className="min-w-full table-auto bg-white border ">
           <thead className="bg-blue-600 text-white uppercase text-sm leading-normal">

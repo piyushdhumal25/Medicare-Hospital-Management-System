@@ -10,9 +10,9 @@ const DoctorAppointments = () => {
     const fetchAppointments = async () => {
       if (!loggedInDoctorEmail) return;
       try {
-        const res = await axios.get(`
-          http://localhost:5000/api/appointments/doctor?email=${loggedInDoctorEmail}
-        `);
+        const res = await axios.get(
+          `http://localhost:5000/api/appointments/doctor?email=${loggedInDoctorEmail}`
+        );
         setAppointments(res.data);
       } catch (error) {
         console.error("Error fetching doctor appointments:", error);

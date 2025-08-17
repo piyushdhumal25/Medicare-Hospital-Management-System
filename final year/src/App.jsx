@@ -11,7 +11,6 @@ import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import HealthConcern from './Pages/healthConcerns';
-import Donate from './donate/Donate';
 import WhyUs from './Pages/whyUs';
 import UserTestimonials from './Pages/testimonials';
 import Map from './Pages/Map';
@@ -29,18 +28,16 @@ import DoctorProfile from './doctordash/DoctorProfile';
 import Chatbot from './Chatbot';
 import PaymentSuccess from './patientdash/PaymentSuccess';
 import PaymentFailed from './patientdash/PaymentFailed';
-import ContactMessages from "./admindash/ContactMessages";
-
 
 const LayoutWrapper = () => {
   const location = useLocation();
 
   const hideNavbarFooterRoutes = [
-  "/admin/dashboard",
-  "/doctor/dashboard",
-  "/patient/dashboard",
-  "/login",
-  "/signup",
+    "/admin/dashboard",
+    "/doctor/dashboard",
+    "/patient/dashboard",
+    "/login",
+    "/signup",
   ];
 
   const shouldHideLayout = hideNavbarFooterRoutes.some(path =>
@@ -74,7 +71,6 @@ const LayoutWrapper = () => {
         <Route path='/about' element={<About />} />
         <Route path='/contact' element={<Contact />} />
 
-    <Route path="/donate" element={<Donate />} />
         <Route path="/admin/dashboard/*" element={
           <ProtectedRoute role="admin">
             <AdminDashboard />
@@ -97,9 +93,6 @@ const LayoutWrapper = () => {
         <Route path="/doctordashboard/*" element={ <DoctorDashboard/> } />
         <Route path="/payment-success" element={<PaymentSuccess />} />
 <Route path="/payment-failed" element={<PaymentFailed />} />
-
-        <Route path="/admin/dashboard/contact-messages" element={<ContactMessages />} />
-
       </Routes>
 
       {/* Show Chatbot on all pages except dashboard/login/signup routes */}

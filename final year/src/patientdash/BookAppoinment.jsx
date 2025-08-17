@@ -80,7 +80,7 @@ const BookAppointment = () => {
         text: "❌ Payment session creation failed",
       });
     }
-  } 
+  }
 };
 
   return (
