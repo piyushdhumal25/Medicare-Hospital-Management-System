@@ -32,3 +32,4 @@ logs
 *.log
 Backend/.env
 Backend/.env
+Backend/.env
