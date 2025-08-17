@@ -1,7 +1,7 @@
 // src/admindash/ContactMessages.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 
 export default function ContactMessages() {
   const [messages, setMessages] = useState([]);
@@ -48,7 +48,7 @@ export default function ContactMessages() {
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       <div className="flex-1 p-8">
         <h1 className="text-3xl font-bold text-center text-blue-900 mb-6">

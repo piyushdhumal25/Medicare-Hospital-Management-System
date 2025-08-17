@@ -1,14 +1,16 @@
+// src/AdminDashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import Navbar from '../Navbar';
 import Sidebar from '../admindash/Sidebar';
 import Topbar from '../admindash/Topbar';
-import Navbar from '../Navbar';
+import DashboardStats from '../admindash/DashboardStats';
 import Dashboard from '../admindash/Dashboard';
 import Appointments from '../admindash/Appointments';
+import AdminAppointments from '../admindash/Appointments';
 import AddDoctor from '../admindash/AddDoctor';
 import DoctorsList from '../admindash/Doctorlist';
-import DashboardStats from '../admindash/DashboardStats';
-import AdminAppointments from '../admindash/Appointments';
+import ContactMessages from '../admindash/ContactMessages';
 
 const AdminDashboard = () => {
   const [totalDoctors, setTotalDoctors] = useState(0);
@@ -16,7 +18,6 @@ const AdminDashboard = () => {
   const [totalAppointments, setTotalAppointments] = useState(0);
 
   useEffect(() => {
-    // 🩺 Fetch Doctors count
     const fetchDoctors = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/doctors');
@@ -28,7 +29,6 @@ const AdminDashboard = () => {
       }
     };
 
-    // 🧍 Fetch Patients count
     const fetchPatients = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/patients');
@@ -40,7 +40,6 @@ const AdminDashboard = () => {
       }
     };
 
-    // 📅 Fetch Appointments count
     const fetchAppointments = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/appointments/all');
@@ -74,14 +73,12 @@ const AdminDashboard = () => {
                     Welcome to Admin Dashboard
                   </h2>
 
-                  {/* ✅ Updated stats with real counts */}
                   <DashboardStats
                     totalDoctors={totalDoctors}
                     totalPatients={totalPatients}
                     totalAppointments={totalAppointments}
                   />
-                  
-                  {/* ✅ Show all appointments table */}
+
                   <div className="mt-8">
                     <AdminAppointments />
                   </div>
@@ -91,6 +88,7 @@ const AdminDashboard = () => {
             <Route path="appointments" element={<Appointments />} />
             <Route path="add-doctor" element={<AddDoctor />} />
             <Route path="doctors-list" element={<DoctorsList />} />
+            <Route path="contact-messages" element={<ContactMessages />} /> {/* ✅ New Route */}
           </Routes>
         </div>
       </div>
