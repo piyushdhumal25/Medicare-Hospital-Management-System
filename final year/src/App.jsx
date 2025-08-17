@@ -28,6 +28,7 @@ import DoctorProfile from './doctordash/DoctorProfile';
 import Chatbot from './Chatbot';
 import PaymentSuccess from './patientdash/PaymentSuccess';
 import PaymentFailed from './patientdash/PaymentFailed';
+import Donate from './donate/Donate';
 
 const LayoutWrapper = () => {
   const location = useLocation();
@@ -92,7 +93,8 @@ const LayoutWrapper = () => {
         <Route path="/admin/dashboard/add-doctor" element={<AddDoctor />} />
         <Route path="/doctordashboard/*" element={ <DoctorDashboard/> } />
         <Route path="/payment-success" element={<PaymentSuccess />} />
-<Route path="/payment-failed" element={<PaymentFailed />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
+        <Route path="/donate" element={<Donate/>} />
       </Routes>
 
       {/* Show Chatbot on all pages except dashboard/login/signup routes */}

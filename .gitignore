@@ -30,3 +30,4 @@ yarn-error.log*
 # Logs
 logs
 *.log
+Backend/.env
