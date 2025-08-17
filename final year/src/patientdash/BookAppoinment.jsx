@@ -24,64 +24,65 @@ const BookAppointment = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Always ensure doctor fee is set, else fallback 500
-  const appointmentData = {
-    patientName: form.name,
-    patientEmail: userData.email,
-    doctorName: doctor.name,
-    doctorEmail: doctor.email,
-    date: form.date,
-    time: form.time,
-    reason: form.reason,
-    status: "Pending",
-    amount: 500,  // 👈 Default fee 500
+    const appointmentData = {
+      patientName: form.name,
+      patientEmail: userData.email,
+      doctorName: doctor.name,
+      doctorEmail: doctor.email,
+      date: form.date,
+      time: form.time,
+      reason: form.reason,
+      status: "Pending",
+      amount: 500,
+    };
+
+    if (paymentMethod === "offline") {
+      try {
+        await axios.post("http://localhost:5000/api/appointments/create", {
+          ...appointmentData,
+          paymentStatus: "Unpaid",
+        });
+        setStatusMessage({
+          type: "success",
+          text: "✅ Appointment Confirmed (Offline Payment)!",
+        });
+        setTimeout(() => navigate("/my-appointments"), 1500);
+      } catch (error) {
+        console.error(error);
+        setStatusMessage({
+          type: "error",
+          text: "❌ Failed to book appointment",
+        });
+      }
+    } else {
+      try {
+        localStorage.setItem(
+          "pendingAppointment",
+          JSON.stringify(appointmentData)
+        );
+
+        const res = await axios.post(
+          "http://localhost:5000/api/payment/create-checkout-session",
+          {
+            doctorName: doctor.name,
+            amount: 500,
+            appointmentData,
+          }
+        );
+
+        window.location.href = res.data.url;
+      } catch (error) {
+        console.error(error);
+        setStatusMessage({
+          type: "error",
+          text: "❌ Payment session creation failed",
+        });
+      }
+    }
   };
-
-  if (paymentMethod === "offline") {
-    try {
-      await axios.post("http://localhost:5000/api/appointments/create", {
-        ...appointmentData,
-        paymentStatus: "Unpaid",
-      });
-      setStatusMessage({
-        type: "success",
-        text: "✅ Appointment Confirmed (Offline Payment)!",
-      });
-      setTimeout(() => navigate("/my-appointments"), 1500);
-    } catch (error) {
-      console.error(error);
-      setStatusMessage({
-        type: "error",
-        text: "❌ Failed to book appointment",
-      });
-    }
-  } else {
-    try {
-      // Save details temporarily for after Stripe redirect
-      localStorage.setItem("pendingAppointment", JSON.stringify(appointmentData));
-
-      const res = await axios.post(
-        "http://localhost:5000/api/payment/create-checkout-session",
-        {
-          doctorName: doctor.name,
-          amount: 500,  // 👈 Same default fee logic
-          appointmentData,
-        }
-      );
-
-      window.location.href = res.data.url; // Redirect to Stripe
-    } catch (error) {
-      console.error(error);
-      setStatusMessage({
-        type: "error",
-        text: "❌ Payment session creation failed",
-      });
-    }
-  }
-};
 
   return (
     <>
@@ -100,7 +101,9 @@ const BookAppointment = () => {
           {statusMessage && (
             <div
               className={`mb-4 text-center font-semibold ${
-                statusMessage.type === "success" ? "text-green-600" : "text-red-600"
+                statusMessage.type === "success"
+                  ? "text-green-600"
+                  : "text-red-600"
               }`}
             >
               {statusMessage.text}
@@ -143,27 +146,62 @@ const BookAppointment = () => {
               required
             />
 
-            {/* Payment Method Selection */}
+            {/* Glowing Card Payment Options */}
             <div className="flex gap-4">
-              <label className="flex items-center gap-2">
+              {/* Offline Card */}
+              <label
+                className={`flex-1 cursor-pointer rounded-2xl p-5 flex flex-col items-center justify-center relative transition-all duration-300 transform hover:scale-105 ${
+                  paymentMethod === "offline"
+                    ? "bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-xl shadow-blue-300 border-2 border-blue-600"
+                    : "bg-gray-50 border border-gray-300 text-gray-700"
+                }`}
+              >
                 <input
                   type="radio"
                   name="paymentMethod"
                   value="offline"
                   checked={paymentMethod === "offline"}
                   onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="hidden"
                 />
-                Offline Payment
+                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-2xl mb-2">
+                  💵
+                </div>
+                <span className="mt-1 text-lg font-semibold">Offline</span>
+                <span className="text-xs opacity-80">Pay at clinic</span>
+                {paymentMethod === "offline" && (
+                  <span className="absolute top-2 right-2 text-white bg-blue-600 rounded-full px-2 py-1 text-xs">
+                    Selected
+                  </span>
+                )}
               </label>
-              <label className="flex items-center gap-2">
+
+              {/* Online Card */}
+              <label
+                className={`flex-1 cursor-pointer rounded-2xl p-5 flex flex-col items-center justify-center relative transition-all duration-300 transform hover:scale-105 ${
+                  paymentMethod === "online"
+                    ? "bg-gradient-to-br from-green-500 to-green-700 text-white shadow-xl shadow-green-300 border-2 border-green-600"
+                    : "bg-gray-50 border border-gray-300 text-gray-700"
+                }`}
+              >
                 <input
                   type="radio"
                   name="paymentMethod"
                   value="online"
                   checked={paymentMethod === "online"}
                   onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="hidden"
                 />
-                Online Payment
+                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-2xl mb-2">
+                  💳
+                </div>
+                <span className="mt-1 text-lg font-semibold">Online</span>
+                <span className="text-xs opacity-80">Pay via Stripe</span>
+                {paymentMethod === "online" && (
+                  <span className="absolute top-2 right-2 text-white bg-green-600 rounded-full px-2 py-1 text-xs">
+                    Selected
+                  </span>
+                )}
               </label>
             </div>
 
@@ -181,3 +219,4 @@ const BookAppointment = () => {
 };
 
 export default BookAppointment;
+
