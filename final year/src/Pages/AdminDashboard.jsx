@@ -11,6 +11,7 @@ import AdminAppointments from '../admindash/Appointments';
 import AddDoctor from '../admindash/AddDoctor';
 import DoctorsList from '../admindash/Doctorlist';
 import ContactMessages from '../admindash/ContactMessages';
+import DonorsList from '../admindash/DonorsList';
 
 const AdminDashboard = () => {
   const [totalDoctors, setTotalDoctors] = useState(0);
@@ -89,6 +90,7 @@ const AdminDashboard = () => {
             <Route path="add-doctor" element={<AddDoctor />} />
             <Route path="doctors-list" element={<DoctorsList />} />
             <Route path="contact-messages" element={<ContactMessages />} /> {/* ✅ New Route */}
+            <Route path="donors-list" element={<DonorsList />} />
           </Routes>
         </div>
       </div>

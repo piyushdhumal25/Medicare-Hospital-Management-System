@@ -24,6 +24,9 @@ const appointmentRoutes = require("./routes/AppointmentRoutes");
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/Appointment", Appointment);
 
+const donorRoutes = require("./routes/donorRoutes"); // adjust path if needed
+app.use("/api/donors", donorRoutes);
+
 const PaymentRoutes = require("./routes/PaymentRoutes");
 app.use("/api/payment", PaymentRoutes);
 

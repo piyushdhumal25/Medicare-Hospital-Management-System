@@ -1,4 +1,3 @@
-// src/admindash/Sidebar.jsx
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, Calendar, UserPlus, Users, LogOut, Mail } from 'lucide-react';
@@ -17,6 +16,7 @@ const Sidebar = () => {
     { name: "Add Doctor", path: "/admin/dashboard/add-doctor", icon: <UserPlus size={20} /> },
     { name: "Doctors List", path: "/admin/dashboard/doctors-list", icon: <Users size={20} /> },
     { name: "Contact Messages", path: "/admin/dashboard/contact-messages", icon: <Mail size={20} /> }, // ✅ new
+    { name: "Donors List", path: "/admin/dashboard/donors-list", icon: <Users size={20} /> },
   ];
 
   return (
