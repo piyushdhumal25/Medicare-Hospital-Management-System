@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const { getDoctors, addDoctor, doctorLogin } = require("../controllers/doctorController");
-// Doctor Login Route
-router.post("/doctor/login", doctorLogin);
+
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // ✅ GET: All Verified Doctors
 router.get("/doctors", async (req, res) => {
@@ -26,6 +27,41 @@ router.get("/doctors", async (req, res) => {
   }
 });
 
+// doctorRoutes.js
+
+
+// Doctor Login Route (DB check)
+router.post("/doctor/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const doctor = await User.findOne({ email, role: "doctor" });
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, doctor.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: doctor._id, role: "doctor" }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+    res.json({
+      message: "Login successful",
+      token,
+      doctor: {
+        id: doctor._id,
+        name: doctor.username,
+        email: doctor.email
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+});
+
+module.exports = router;
 router.get("/doctors",getDoctors);
 
 
