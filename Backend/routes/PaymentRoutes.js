@@ -1,11 +1,12 @@
 const express = require("express");
 const Stripe = require("stripe");
 const Appointment = require("../models/Appointments");
+const Doctor = require("../models/Doctor"); // 🔹 Import Doctor model
 
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// Create Stripe Checkout Session
+// ✅ Create Stripe Checkout Session
 router.post("/create-checkout-session", async (req, res) => {
   try {
     const { doctorName, amount } = req.body;
@@ -21,7 +22,7 @@ router.post("/create-checkout-session", async (req, res) => {
         {
           price_data: {
             currency: "inr",
-            product_data: { name: `Appointment with Dr. ${doctorName}` },
+            product_data: { name: `Appointment with Dr. ${doctorName} `},
             unit_amount: amount * 100, // convert ₹ to paise
           },
           quantity: 1,
@@ -38,10 +39,10 @@ router.post("/create-checkout-session", async (req, res) => {
   }
 });
 
-// Save appointment after successful payment
+// ✅ Save appointment & update doctor's earnings
 router.post("/confirm-online-appointment", async (req, res) => {
   try {
-    const { patientName, patientEmail, doctorName, doctorEmail, date, time, reason } = req.body;
+    const { patientName, patientEmail, doctorName, doctorEmail, date, time, reason, amount } = req.body;
 
     const appointment = new Appointment({
       patientName,
@@ -56,7 +57,15 @@ router.post("/confirm-online-appointment", async (req, res) => {
     });
 
     await appointment.save();
-    res.status(201).json({ message: "Appointment booked successfully" });
+
+    // 🔹 Update Doctor Earnings
+    const doctor = await Doctor.findOneAndUpdate(
+      { email: doctorEmail },
+      { $inc: { earnings: amount } }, // increment earnings
+      { new: true }
+    );
+
+    res.status(201).json({ message: "Appointment booked successfully", doctor });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error booking appointment" });

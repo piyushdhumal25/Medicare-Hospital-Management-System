@@ -6,9 +6,11 @@ const doctorSchema = new mongoose.Schema({
   password: { type: String, required: true },
   specialty: { type: String, required: true },
   experience: { type: String, required: true },
-  fees: { type: Number, required: true },
   location: { type: String, required: true },
-  image: { type: String, required: true }
+  image: { type: String, required: true },
+
+  // 🔹 Add earnings field
+  earnings: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model("Doctor", doctorSchema);
