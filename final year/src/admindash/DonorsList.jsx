@@ -5,7 +5,6 @@ import axios from "axios";
 const DonorsList = () => {
   const [donors, setDonors] = useState([]);
   const [search, setSearch] = useState("");
-  const [cityFilter, setCityFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -39,17 +38,12 @@ const DonorsList = () => {
     }
   };
 
-  // Extract unique cities for filter dropdown
-  const uniqueCities = [...new Set(donors.map((donor) => donor.city))];
-
-  // Apply search + filter
+  // Apply search filter
   const filteredDonors = donors.filter((donor) => {
-    const matchesSearch =
-      donor.firstName.toLowerCase().includes(search.toLowerCase()) ||
-      donor.lastName.toLowerCase().includes(search.toLowerCase()) ||
-      donor.email.toLowerCase().includes(search.toLowerCase());
-    const matchesCity = cityFilter ? donor.city === cityFilter : true;
-    return matchesSearch && matchesCity;
+    const searchTerm = search.toLowerCase();
+    return donor.firstName.toLowerCase().includes(searchTerm) ||
+           donor.lastName.toLowerCase().includes(searchTerm) ||
+           donor.email.toLowerCase().includes(searchTerm);
   });
 
 
@@ -83,30 +77,15 @@ const DonorsList = () => {
         </div>
       )}
 
-      {/* Search & Filter Bar */}
+      {/* Search Bar */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        {/* Search Box */}
         <input
           type="text"
           placeholder="🔍 Search by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:w-1/2 p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none"
+          className="w-full p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none"
         />
-
-        {/* City Filter */}
-        <select
-          value={cityFilter}
-          onChange={(e) => setCityFilter(e.target.value)}
-          className="w-full sm:w-1/3 p-3 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none"
-        >
-          <option value="">🌍 All Cities</option>
-          {uniqueCities.map((city, index) => (
-            <option key={index} value={city}>
-              {city}
-            </option>
-          ))}
-        </select>
       </div>
 
       {/* Donors Table */}
