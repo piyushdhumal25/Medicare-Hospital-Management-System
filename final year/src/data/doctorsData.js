@@ -45,7 +45,7 @@ const doctorsData = [
     password: "emily123",
     specialty: "Neurologist",
     experience: "10 years",
-    fee: "$₹800 -₹1000",
+    fee: "₹800 -₹1000",
     available: ["Neuro Clinic, Texas", "Online Zoom Sessions"],
     rating: 4.6,
     category: "Neurologist",
