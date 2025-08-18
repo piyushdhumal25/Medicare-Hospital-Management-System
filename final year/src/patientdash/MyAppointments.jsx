@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const MyAppointments = () => {
   const [appointments, setAppointments] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -11,6 +13,7 @@ const MyAppointments = () => {
 
       try {
         const res = await axios.get(`http://localhost:5000/api/appointments?email=${email}`);
+        console.log("Appointment data received:", res.data);
         setAppointments(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Failed to fetch appointments", err);
@@ -52,6 +55,7 @@ const MyAppointments = () => {
               <th className="py-3 px-6 text-left font-bold">Reason</th>
               <th className="py-3 px-6 text-left font-bold">Status</th>
               <th className="py-3 px-6 text-left font-bold">Payment</th> {/* ✅ New Column */}
+                <th className="py-3 px-6 text-left font-bold">Prescription</th>
             </tr>
           </thead>
           <tbody className="text-gray-800 text-sm font-medium divide-y divide-gray-200">
@@ -76,12 +80,41 @@ const MyAppointments = () => {
                         {appt.paymentStatus || "Pending"}
                       </span>
                     </td>
+                    <td className="py-4 px-6">
+                      {Array.isArray(appt.prescription) && appt.prescription.length > 0 ? (
+                        <button
+                          className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-semibold hover:bg-blue-700"
+                          onClick={() => {
+                            console.log("Appointment data for prescription:", appt);
+                            
+                            // Get user data directly from localStorage
+                            const userData = JSON.parse(localStorage.getItem('user') || "{}");
+                            console.log("User data from localStorage:", userData);
+                            
+                            // Navigate to prescription view
+                            navigate('/prescription-view', { 
+                              state: { 
+                                prescription: appt.prescription, 
+                                doctorName: appt.doctorName, 
+                                date: appt.date, 
+                                time: appt.time,
+                                patientEmail: appt.patientEmail || userData.email // Use appointment's patient email or user email
+                              } 
+                            });
+                          }}
+                        >
+                          View
+                        </button>
+                      ) : (
+                        <span className="text-gray-400 italic">No prescription</span>
+                      )}
+                    </td>
                   </tr>
                 ))
             ) : (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan="7"
                   className="text-center py-6 text-gray-500 italic"
                 >
                   No appointments found.
@@ -91,7 +124,7 @@ const MyAppointments = () => {
           </tbody>
         </table>
       </div>
-    </div>
+  </div>
   );
 };
 

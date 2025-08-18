@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa"; // ✅ Import logout icon
+import { LogOut } from "lucide-react"; // Change to use Lucide React icons like admin dashboard
 
 const Sidebar = () => {
   const location = useLocation();
@@ -13,7 +13,7 @@ const Sidebar = () => {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.clear();
     navigate("/");
   };
 
@@ -44,9 +44,9 @@ const Sidebar = () => {
       <div className="p-6">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-5 py-3 text-left rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition duration-200"
+          className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition duration-200"
         >
-          <FaSignOutAlt className="text-lg" /> {/* Icon */}
+          <LogOut size={20} />
           Logout
         </button>
       </div>

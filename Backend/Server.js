@@ -34,6 +34,31 @@ app.get('/api/test', (req, res) => {
   });
 });
 
+// Debug route: List all registered endpoints
+app.get('/api/routes', (req, res) => {
+  const routes = [];
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      // routes registered directly on the app
+      routes.push({
+        path: middleware.route.path,
+        methods: Object.keys(middleware.route.methods)
+      });
+    } else if (middleware.name === 'router') {
+      // router middleware
+      middleware.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          routes.push({
+            path: handler.route.path,
+            methods: Object.keys(handler.route.methods)
+          });
+        }
+      });
+    }
+  });
+  res.json(routes);
+});
+
 // Connect to MongoDB once
 mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/appointmentsDB", {
   useNewUrlParser: true,
@@ -56,7 +81,6 @@ app.use("/api", doctorRoutes);
  
 const appointmentRoutes = require("./routes/AppointmentRoutes");
 app.use("/api/appointments", appointmentRoutes);
-app.use("/api/Appointment", Appointment);
 
 // Debug middleware
 app.use((req, res, next) => {

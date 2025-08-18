@@ -10,6 +10,14 @@ const AppointmentSchema = new mongoose.Schema({
   reason: String,
   status: { type: String, default: "Pending" }, // Appointment status
   paymentStatus: { type: String, default: "Unpaid" }, // Unpaid | Pending | Paid
+  prescription: [
+    {
+      medicine: { type: String, required: true },
+      dose: { type: String, required: true },
+      frequency: { type: String },
+      note: { type: String }
+    }
+  ], // Array of prescription items
 });
 
 // prevent duplicate booking

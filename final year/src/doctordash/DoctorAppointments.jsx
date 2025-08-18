@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { DoctorContext } from "../data/DoctorContext";
 import axios from "axios";
+import PrescriptionInput from "./PrescriptionInput";
 
 const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const { loggedInDoctorEmail } = useContext(DoctorContext);
+  const [showPrescriptionFor, setShowPrescriptionFor] = useState(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -101,6 +103,11 @@ const DoctorAppointments = () => {
                     >
                       {appt.paymentStatus || "Pending"}
                     </span>
+                    {appt.prescription && appt.prescription.length > 0 && (
+                      <span className="inline-block px-4 py-1 rounded-full text-sm font-semibold border bg-green-100 text-green-800 border-green-300">
+                        Prescription Added
+                      </span>
+                    )}
                   </div>
                   <div className="mt-4">
                     <label className="text-sm font-medium text-gray-700 mb-1 block">
@@ -115,9 +122,41 @@ const DoctorAppointments = () => {
                       <option value="Approved">Approved</option>
                       <option value="Cancelled">Cancelled</option>
                     </select>
+                    
+                    {/* Add Prescription Button */}
+                    {appt.status === "Approved" && (
+                      <div className="mt-3">
+                        <button
+                          type="button"
+                          className="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          onClick={() => setShowPrescriptionFor(showPrescriptionFor === appt._id ? null : appt._id)}
+                        >
+                          {showPrescriptionFor === appt._id ? "Hide Prescription Form" : "Add Prescription"}
+                        </button>
+                      </div>
+                    )}
+                    
                   </div>
                 </div>
               </div>
+              
+              {/* Prescription input area - full width */}
+              {appt.status === "Approved" && showPrescriptionFor === appt._id && (
+                <div className="mt-4 border-t border-gray-200 pt-4">
+                  <PrescriptionInput
+                    appointment={appt}
+                    onPrescriptionSaved={(prescription) => {
+                      setAppointments((prev) =>
+                        prev.map((a) =>
+                          a._id === appt._id ? { ...a, prescription } : a
+                        )
+                      );
+                      // Hide the prescription form after saving
+                      setShowPrescriptionFor(null);
+                    }}
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>

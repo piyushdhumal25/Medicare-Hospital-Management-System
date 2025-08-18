@@ -28,6 +28,7 @@ import DoctorProfile from './doctordash/DoctorProfile';
 import Chatbot from './Chatbot';
 import PaymentSuccess from './patientdash/PaymentSuccess';
 import PaymentFailed from './patientdash/PaymentFailed';
+import PrescriptionPage from './patientdash/PrescriptionPage';
 import Donate from './donate/Donate';
 
 const LayoutWrapper = () => {
@@ -39,6 +40,7 @@ const LayoutWrapper = () => {
     "/patient/dashboard",
     "/login",
     "/signup",
+    "/prescription-view",
   ];
 
   const shouldHideLayout = hideNavbarFooterRoutes.some(path =>
@@ -77,7 +79,7 @@ const LayoutWrapper = () => {
             <AdminDashboard />
           </ProtectedRoute>
         } />
-        <Route path="/doctor/dashboard" element={
+  <Route path="/doctor/dashboard/*" element={
           <ProtectedRoute role="doctor">
             <DoctorDashboard />
           </ProtectedRoute>
@@ -88,7 +90,8 @@ const LayoutWrapper = () => {
           </ProtectedRoute>
         } />
         <Route path="/book-appointment" element={<BookAppointment />} />
-        <Route path="/my-appointments" element={<PatientDashboard />} />
+  <Route path="/my-appointments" element={<PatientDashboard />} />
+  <Route path="/prescription-view" element={<PrescriptionPage />} />
         <Route path="/admin/dashboard/doctors-list" element={<DoctorsList />} />
         <Route path="/admin/dashboard/add-doctor" element={<AddDoctor />} />
         <Route path="/doctordashboard/*" element={ <DoctorDashboard/> } />

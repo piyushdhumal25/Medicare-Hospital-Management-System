@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+
+const { addPrescription } = require("../controllers/AppointmentController");
 const Appointment = require("../models/Appointments"); // Make sure model file name is correct
 
 // ✅ Create new appointment (Prevent duplicates)
@@ -103,4 +105,9 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
+
+router.put("/prescription", addPrescription);
+
 module.exports = router;
+
+router.put("/prescription", addPrescription);

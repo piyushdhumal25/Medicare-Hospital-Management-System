@@ -1,0 +1,2 @@
+// This is a base64 encoded placeholder for a doctor logo
+// We'll use it directly in the PrescriptionPage component
