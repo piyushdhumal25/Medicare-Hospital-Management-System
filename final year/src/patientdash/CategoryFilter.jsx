@@ -11,7 +11,7 @@ const categories = [
   "Psychology",
   "Orthopedics",
   "Traumatology",
- "Anesthesiologist",
+ "Gynecologist",
   
   
   
