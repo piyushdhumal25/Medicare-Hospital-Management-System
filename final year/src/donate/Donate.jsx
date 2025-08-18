@@ -4,7 +4,24 @@ import React from "react";
 export default function Donate() {
   const [submitted, setSubmitted] = useState(false);
   const [donorName, setDonorName] = useState("");
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    birthDate: "",
+    occupation: "",
+    gender: "",
+    phone: "",
+    email: "",
+    address: "",
+    city: "",
+    country: "",
+    zip: "",
+    lastDonation: "",
+    donatedPreviously: "",
+    medications: [],
+    surgeryHistory: []
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Update form data state
   const handleChange = (e) => {
@@ -14,44 +31,149 @@ export default function Donate() {
       // handle multi-checkbox arrays (like medications, surgeryHistory)
       setFormData((prev) => {
         const existing = prev[name] || [];
+        const updated = checked
+          ? [...existing, value]
+          : existing.filter((v) => v !== value);
+        
         return {
           ...prev,
-          [name]: checked
-            ? [...existing, value]
-            : existing.filter((v) => v !== value),
+          [name]: updated
         };
       });
+    } else if (type === "radio") {
+      // For radio buttons, just set the value directly
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+      
+      // Update donor name if it's firstName or lastName
+      if (name === 'firstName' || name === 'lastName') {
+        setDonorName(prev => {
+          const names = prev.split(' ');
+          if (name === 'firstName') {
+            return `${value} ${names[1] || ''}`.trim();
+          } else {
+            return `${names[0] || ''} ${value}`.trim();
+          }
+        });
+      }
     } else {
-      setFormData({ ...formData, [name]: value });
+      // For all other inputs
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+      
+      // Update donor name if it's firstName or lastName
+      if (name === 'firstName' || name === 'lastName') {
+        setDonorName(prev => {
+          const names = prev.split(' ');
+          if (name === 'firstName') {
+            return `${value} ${names[1] || ''}`.trim();
+          } else {
+            return `${names[0] || ''} ${value}`.trim();
+          }
+        });
+      }
     }
   };
 
   // Submit data to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     try {
-      const response = await fetch("http://localhost:5000/api/donors", {
+      setIsSubmitting(true);
+
+      // Validate required fields based on the model
+      const requiredFields = [
+        'firstName', 'lastName', 'birthDate', 'occupation', 
+        'gender', 'phone', 'email', 'address', 'city', 'country'
+      ];
+
+      const missingFields = requiredFields.filter(field => 
+        !formData[field] || formData[field].toString().trim() === ''
+      );
+
+      if (missingFields.length > 0) {
+        alert(`Please fill in all required fields: ${missingFields.join(', ')}`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Format the data
+      const formattedData = {
+        ...formData,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        birthDate: new Date(formData.birthDate).toISOString(),
+        medications: formData.medications || [],
+        surgeryHistory: formData.surgeryHistory || []
+      };
+
+      console.log('Submitting data:', formattedData);
+
+      // Submit the form
+      const response = await fetch("http://localhost:5000/api/donors/create", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formattedData)
       });
 
-      if (response.ok) {
-        setSubmitted(true);
-      } else {
-        alert("Failed to submit donation form");
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      // Try to get response text first
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${responseText}`);
       }
+      
+      // Try to parse as JSON if possible
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('Parsed response:', data);
+      } catch (e) {
+        console.error('Failed to parse response as JSON:', e);
+        throw new Error('Server returned invalid response format');
+      }
+
+      // If we get here, the submission was successful
+      setDonorName(formattedData.firstName + " " + formattedData.lastName);
+      setSubmitted(true);
+      alert('Donation form submitted successfully!');
     } catch (error) {
-      console.error(error);
-      alert("Error connecting to server");
+      console.error("Error submitting form:", error);
+      alert(error.message || "Could not submit form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // Show certificate if submitted
-  if (submitted) {
+  if (submitted && donorName) {
     return (
       <div className="flex flex-col items-center justify-center bg-gradient-to-br from-red-100 via-white to-blue-100 min-h-screen pt-28 pb-20">
         <div className="relative bg-white/90 border-4 border-blue-400 rounded-3xl shadow-2xl max-w-xl w-full px-8 py-10 flex flex-col items-center">
+          <div className="mb-4 w-full flex justify-end">
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              Print Certificate
+            </button>
+          </div>
           <div className="absolute left-1/2 -translate-x-1/2 -top-8 z-10">
             <svg width="180" height="50" viewBox="0 0 180 50">
               <rect x="0" y="15" width="180" height="20" rx="10" fill="#2563eb" />
@@ -178,11 +300,11 @@ export default function Donate() {
 
               {/* Gender */}
               <div>
-                <label className="block mb-2 font-semibold text-gray-700">Gender</label>
+                <label className="block mb-2 font-semibold text-gray-700">Gender *</label>
                 <div className="flex gap-4 mt-2">
-                  <label><input type="radio" name="gender" value="male" onChange={handleChange} /> Male</label>
-                  <label><input type="radio" name="gender" value="female" onChange={handleChange} /> Female</label>
-                  <label><input type="radio" name="gender" value="other" onChange={handleChange} /> Other</label>
+                  <label><input type="radio" name="gender" value="male" required onChange={handleChange} /> Male</label>
+                  <label><input type="radio" name="gender" value="female" required onChange={handleChange} /> Female</label>
+                  <label><input type="radio" name="gender" value="other" required onChange={handleChange} /> Other</label>
                 </div>
               </div>
 
@@ -264,9 +386,22 @@ export default function Donate() {
             {/* Submit */}
             <button
               type="submit"
-              className="bg-gradient-to-r from-red-500 to-red-700 text-white px-8 py-3 rounded-full shadow-lg hover:scale-110 transition-all font-bold text-lg tracking-wide"
+              disabled={isSubmitting}
+              className={`bg-gradient-to-r from-red-500 to-red-700 text-white px-8 py-3 rounded-full shadow-lg transition-all font-bold text-lg tracking-wide flex items-center justify-center gap-2 ${
+                isSubmitting ? 'opacity-75 cursor-not-allowed' : 'hover:scale-110'
+              }`}
             >
-              Donate Now
+              {isSubmitting ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Processing...</span>
+                </>
+              ) : (
+                'Donate Now'
+              )}
             </button>
           </form>
         </div>

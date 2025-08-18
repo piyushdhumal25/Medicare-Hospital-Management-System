@@ -1,23 +1,43 @@
 import React, { useEffect, useState } from "react";
+import { FaTrashAlt } from "react-icons/fa";
+import axios from "axios";
 
 const DonorsList = () => {
   const [donors, setDonors] = useState([]);
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchDonors = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get("http://localhost:5000/api/donors");
+      setDonors(res.data);
+    } catch (error) {
+      console.error("Failed to fetch donors", error);
+      setError("Could not load donors");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDonors = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/donors");
-        if (!response.ok) throw new Error("Failed to fetch donors");
-        const data = await response.json();
-        setDonors(data);
-      } catch (error) {
-        console.error("Error fetching donors:", error);
-      }
-    };
     fetchDonors();
   }, []);
+
+  const deleteDonor = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this donor?")) return;
+
+    try {
+      await axios.delete(`http://localhost:5000/api/donors/delete/${id}`);
+      alert("Donor deleted successfully");
+      fetchDonors();
+    } catch (error) {
+      console.error("Error deleting donor:", error);
+      alert("Failed to delete donor");
+    }
+  };
 
   // Extract unique cities for filter dropdown
   const uniqueCities = [...new Set(donors.map((donor) => donor.city))];
@@ -32,6 +52,8 @@ const DonorsList = () => {
     return matchesSearch && matchesCity;
   });
 
+
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Page Header */}
@@ -39,10 +61,27 @@ const DonorsList = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-3 sm:mb-0">
           🩸 Blood Donors
         </h2>
-        <span className="px-4 py-2 bg-red-100 text-red-700 font-medium rounded-lg shadow-sm">
-          Total Donors: {filteredDonors.length}
-        </span>
+        <div className="flex gap-4 items-center">
+          <span className="px-4 py-2 bg-red-100 text-red-700 font-medium rounded-lg shadow-sm">
+            Total Donors: {filteredDonors.length}
+          </span>
+          {loading && (
+            <span className="px-4 py-2 bg-blue-100 text-blue-700 font-medium rounded-lg shadow-sm flex items-center gap-2">
+              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Loading...
+            </span>
+          )}
+        </div>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
 
       {/* Search & Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -71,6 +110,7 @@ const DonorsList = () => {
       </div>
 
       {/* Donors Table */}
+      {/* Donors Table */}
       <div className="overflow-x-auto bg-white rounded-xl shadow-lg">
         <table className="w-full border-collapse">
           <thead>
@@ -82,13 +122,15 @@ const DonorsList = () => {
               <th className="p-3">Email</th>
               <th className="p-3">City</th>
               <th className="p-3">Last Donation</th>
+              <th className="p-3">Registered Date</th>
+              <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredDonors.length > 0 ? (
+            {!loading && filteredDonors.length > 0 ? (
               filteredDonors.map((donor, index) => (
                 <tr
-                  key={index}
+                  key={donor.id || index}
                   className="border-b hover:bg-red-50 transition duration-200"
                 >
                   <td className="p-3 font-medium text-gray-600">
@@ -97,22 +139,57 @@ const DonorsList = () => {
                   <td className="p-3 font-semibold text-gray-800">
                     {donor.firstName} {donor.lastName}
                   </td>
-                  <td className="p-3">{donor.gender}</td>
-                  <td className="p-3 text-blue-600">{donor.phone}</td>
-                  <td className="p-3">{donor.email}</td>
+                  <td className="p-3 capitalize">
+                    {donor.gender?.toLowerCase()}
+                  </td>
+                  <td className="p-3 text-blue-600">
+                    <a href={`tel:${donor.phone}`} className="hover:underline">
+                      {donor.phone}
+                    </a>
+                  </td>
+                  <td className="p-3">
+                    <a href={`mailto:${donor.email}`} className="hover:underline text-blue-600">
+                      {donor.email}
+                    </a>
+                  </td>
                   <td className="p-3">{donor.city}</td>
                   <td className="p-3">
-                    {donor.lastDonation ? donor.lastDonation : "N/A"}
+                    {donor.lastDonation 
+                      ? new Date(donor.lastDonation).toLocaleDateString() 
+                      : "N/A"}
+                  </td>
+                  <td className="p-3 text-gray-500">
+                    {new Date(donor.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-3">
+                    <button
+                      onClick={() => deleteDonor(donor._id)}
+                      className="text-red-600 hover:text-red-800 flex items-center gap-1 text-sm"
+                    >
+                      <FaTrashAlt className="text-xs" /> Delete
+                    </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan="7"
-                  className="text-center p-6 text-gray-500 font-medium"
+                  colSpan="8"
+                  className="text-center p-8 text-gray-500 font-medium"
                 >
-                  🚫 No donors found
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-3">
+                      <svg className="animate-spin h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Loading donors...
+                    </div>
+                  ) : error ? (
+                    <>❌ {error}</>
+                  ) : (
+                    <>🚫 No donors found</>
+                  )}
                 </td>
               </tr>
             )}
