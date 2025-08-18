@@ -36,7 +36,7 @@ const BookAppointment = () => {
       time: form.time,
       reason: form.reason,
       status: "Pending",
-      amount: 500,
+      amount: 1500,
     };
 
     if (paymentMethod === "offline") {
@@ -68,7 +68,7 @@ const BookAppointment = () => {
           "http://localhost:5000/api/payment/create-checkout-session",
           {
             doctorName: doctor.name,
-            amount: 500,
+            amount: 1500,
             appointmentData,
           }
         );

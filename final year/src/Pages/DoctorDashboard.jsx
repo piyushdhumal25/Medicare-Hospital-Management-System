@@ -85,18 +85,7 @@ const DoctorDashboard = () => {
 
                   {/* Stats */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Earnings */}
-                    <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-5 border border-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">
-                      <div className="bg-green-100 p-4 rounded-full">
-                        <FaMoneyBillWave className="text-3xl text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-gray-500 text-sm font-medium">Earnings</p>
-                        <h2 className="text-2xl font-bold text-gray-800">
-                          ₹{doctor?.earnings || 0}
-                        </h2>
-                      </div>
-                    </div>
+                    
 
                     {/* Appointments */}
                     <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-5 border border-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">

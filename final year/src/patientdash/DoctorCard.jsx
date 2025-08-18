@@ -15,6 +15,9 @@ const DoctorCard = ({ doctor, onClick, isSelected }) => {
         <b>Available:</b>{" "}
         {Array.isArray(doctor.available) ? doctor.available.join(", ") : doctor.available}
       </p>
+      <p className="text-sm text-gray-600 mt-2">
+        <b>Fee:</b>1500₹
+      </p>
       {/* Price tag removed */}
     </div>
   );
