@@ -30,6 +30,7 @@ import PaymentSuccess from './patientdash/PaymentSuccess';
 import PaymentFailed from './patientdash/PaymentFailed';
 import PrescriptionPage from './patientdash/PrescriptionPage';
 import Donate from './donate/Donate';
+import AllDoctors from './patientdash/AllDoctors';
 
 const LayoutWrapper = () => {
   const location = useLocation();
@@ -98,6 +99,7 @@ const LayoutWrapper = () => {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/donate" element={<Donate/>} />
+        <Route path="/all-doctors" element={ <AllDoctors/> } />
       </Routes>
 
       {/* Show Chatbot on all pages except dashboard/login/signup routes */}

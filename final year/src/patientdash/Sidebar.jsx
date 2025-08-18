@@ -3,7 +3,6 @@ import {
   FaHome,
   FaUserMd,
   FaCalendarCheck,
-  FaCommentDots,
   FaCog,
 } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
@@ -34,16 +33,26 @@ const Sidebar = () => {
 
         {/* Navigation Icons */}
         <div className="flex flex-col items-center space-y-6 mt-8 text-xl pt-36">
+          {/* Dashboard */}
           <FaHome
-            className= {`cursor-pointer hover:text-cyan-500 ${isActive("/patient/dashboard")}`}
+            className={`cursor-pointer hover:text-cyan-500 ${isActive("/patient/dashboard")}`}
             onClick={() => navigate("/patient/dashboard")}
+            title="Dashboard"
           />
+
+          {/* My Appointments */}
           <FaCalendarCheck
             className={`cursor-pointer hover:text-cyan-500 ${isActive("/my-appointments")}`}
             onClick={() => navigate("/my-appointments")}
+            title="My Appointments"
           />
-         
-          
+
+          {/* All Doctors */}
+          <FaUserMd
+            className={`cursor-pointer hover:text-cyan-500 ${isActive("/all-doctors")}`}
+            onClick={() => navigate("/all-doctors")}
+            title="All Doctors"
+          />
         </div>
       </div>
 

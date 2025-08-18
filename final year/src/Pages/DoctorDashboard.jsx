@@ -18,7 +18,7 @@ const DoctorDashboard = () => {
   const [doctorAppointments, setDoctorAppointments] = useState([]);
   const [uniquePatients, setUniquePatients] = useState(0);
 
-  // ✅ Fetch doctor details
+  // ✅ Fetch doctor details (with earnings)
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
@@ -84,89 +84,89 @@ const DoctorDashboard = () => {
                   </div>
 
                   {/* Stats */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-  
-  {/* Earnings */}
-  <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-5 border border-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">
-    <div className="bg-green-100 p-4 rounded-full">
-      <FaMoneyBillWave className="text-3xl text-green-600" />
-    </div>
-    <div>
-      <p className="text-gray-500 text-sm font-medium">Earnings</p>
-      <h2 className="text-2xl font-bold text-gray-800">₹1300</h2>
-    </div>
-  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Earnings */}
+                    <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-5 border border-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">
+                      <div className="bg-green-100 p-4 rounded-full">
+                        <FaMoneyBillWave className="text-3xl text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-sm font-medium">Earnings</p>
+                        <h2 className="text-2xl font-bold text-gray-800">
+                          ₹{doctor?.earnings || 0}
+                        </h2>
+                      </div>
+                    </div>
 
-  {/* Appointments */}
-  <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-5 border border-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">
-    <div className="bg-blue-100 p-4 rounded-full">
-      <FaCalendarCheck className="text-3xl text-blue-600" />
-    </div>
-    <div>
-      <p className="text-gray-500 text-sm font-medium">Appointments</p>
-      <h2 className="text-2xl font-bold text-gray-800">{approvedAppointmentsCount}</h2>
-    </div>
-  </div>
+                    {/* Appointments */}
+                    <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-5 border border-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">
+                      <div className="bg-blue-100 p-4 rounded-full">
+                        <FaCalendarCheck className="text-3xl text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-sm font-medium">Appointments</p>
+                        <h2 className="text-2xl font-bold text-gray-800">
+                          {approvedAppointmentsCount}
+                        </h2>
+                      </div>
+                    </div>
 
-  {/* Patients */}
-  <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-5 border border-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">
-    <div className="bg-purple-100 p-4 rounded-full">
-      <FaUserInjured className="text-3xl text-purple-600" />
-    </div>
-    <div>
-      <p className="text-gray-500 text-sm font-medium">Patients</p>
-      <h2 className="text-2xl font-bold text-gray-800">{uniquePatients}</h2>
-    </div>
-  </div>
-
-</div>
-
+                    {/* Patients */}
+                    <div className="bg-white rounded-2xl shadow-lg p-6 flex items-center gap-5 border border-gray-100 hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">
+                      <div className="bg-purple-100 p-4 rounded-full">
+                        <FaUserInjured className="text-3xl text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-sm font-medium">Patients</p>
+                        <h2 className="text-2xl font-bold text-gray-800">{uniquePatients}</h2>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Profile Overview */}
-<div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition duration-300">
-  <div className="flex justify-between items-center mb-5 border-b pb-3">
-    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-      <span className="bg-blue-100 text-blue-600 p-2 rounded-full">
-        🩺
-      </span>
-      Profile Overview
-    </h2>
-    <button
-      onClick={() => navigate("profile")}
-      className="px-4 py-1.5 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition text-sm"
-    >
-      View Full Profile
-    </button>
-  </div>
+                  <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition duration-300">
+                    <div className="flex justify-between items-center mb-5 border-b pb-3">
+                      <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <span className="bg-blue-100 text-blue-600 p-2 rounded-full">🩺</span>
+                        Profile Overview
+                      </h2>
+                      <button
+                        onClick={() => navigate("profile")}
+                        className="px-4 py-1.5 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition text-sm"
+                      >
+                        View Full Profile
+                      </button>
+                    </div>
 
-  {doctor ? (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 text-gray-700 text-sm">
-      <div>
-        <p className="text-gray-500">Name</p>
-        <p className="font-semibold">{doctor.name}</p>
-      </div>
-      <div>
-        <p className="text-gray-500">Specialty</p>
-        <p className="font-semibold">{doctor.specialty || doctor.speciality}</p>
-      </div>
-      <div>
-        <p className="text-gray-500">Experience</p>
-        <p className="font-semibold">
-          {doctor.experience && typeof doctor.experience === "string"
-            ? doctor.experience
-            : `${doctor.experience} years`}
-        </p>
-      </div>
-      <div>
-        <p className="text-gray-500">Email</p>
-        <p className="font-semibold">{doctor.email}</p>
-      </div>
-    </div>
-  ) : (
-    <p className="text-gray-500 text-sm">Loading doctor details...</p>
-  )}
-</div>
-
+                    {doctor ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 text-gray-700 text-sm">
+                        <div>
+                          <p className="text-gray-500">Name</p>
+                          <p className="font-semibold">{doctor.name}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Specialty</p>
+                          <p className="font-semibold">
+                            {doctor.specialty || doctor.speciality}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Experience</p>
+                          <p className="font-semibold">
+                            {doctor.experience && typeof doctor.experience === "string"
+                              ? doctor.experience
+                              : `${doctor.experience} years`}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Email</p>
+                          <p className="font-semibold">{doctor.email}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm">Loading doctor details...</p>
+                    )}
+                  </div>
                 </div>
               }
             />
