@@ -2,19 +2,18 @@ const express = require("express");
 const router = express.Router();
 
 const { addPrescription } = require("../controllers/AppointmentController");
-const Appointment = require("../models/Appointments"); // Make sure model file name is correct
+const Appointment = require("../models/Appointments");
 
 // ✅ Create new appointment (Prevent duplicates)
 router.post("/create", async (req, res) => {
   try {
     const { patientEmail, doctorEmail, date, time } = req.body;
 
-    // Check if this exact slot is already booked for this patient & doctor
     const existing = await Appointment.findOne({
       patientEmail,
-      doctorEmail ,
-      date: date,
-      time: time
+      doctorEmail,
+      date,
+      time,
     });
 
     if (existing) {
@@ -40,14 +39,16 @@ router.get("/all", async (req, res) => {
   }
 });
 
-// ✅ Get appointments for patient by patientEmail
+// ✅ Get appointments for patient by email
 router.get("/", async (req, res) => {
   const { email } = req.query;
   console.log("Fetching appointments for patient email:", email);
 
   try {
-    const appointments = await Appointment.find({ patientEmail: email }).sort({ date: 1, time: 1 });
-    console.log("Found appointments:", appointments);
+    const appointments = await Appointment.find({ patientEmail: email }).sort({
+      date: 1,
+      time: 1,
+    });
     res.status(200).json(appointments);
   } catch (err) {
     console.log("Error fetching appointments:", err);
@@ -61,8 +62,10 @@ router.get("/doctor", async (req, res) => {
   console.log("Fetching appointments for doctor email:", email);
 
   try {
-    const appointments = await Appointment.find({ doctorEmail: email }).sort({ date: 1, time: 1 });
-    console.log("Doctor's appointments:", appointments);
+    const appointments = await Appointment.find({ doctorEmail: email }).sort({
+      date: 1,
+      time: 1,
+    });
     res.status(200).json(appointments);
   } catch (err) {
     console.log("Error fetching doctor's appointments:", err);
@@ -70,24 +73,65 @@ router.get("/doctor", async (req, res) => {
   }
 });
 
-// ✅ Update appointment status
+// ✅ Update appointment status (Doctor/Admin)
 router.put("/:id/status", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
   try {
-    const updated = await Appointment.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true }
-    );
-    res.status(200).json(updated);
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found" });
+    }
+
+    // 🚫 Prevent update if already Cancelled
+    if (appointment.status === "Cancelled") {
+      return res
+        .status(400)
+        .json({ error: "Cancelled appointment cannot be updated" });
+    }
+
+    // 🚫 Allow update only if Pending
+    if (appointment.status !== "Pending") {
+      return res
+        .status(400)
+        .json({ error: "Only pending appointments can be updated" });
+    }
+
+    appointment.status = status;
+    await appointment.save();
+
+    res.status(200).json(appointment);
   } catch (err) {
     res.status(500).json({ error: "Failed to update status" });
   }
 });
 
-// ✅ DELETE single appointment by _id
+// ✅ Cancel appointment (Patient)
+router.put("/cancel/:id", async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    // Already cancelled? Just return it
+    if (appointment.status === "Cancelled") {
+      return res.json(appointment);
+    }
+
+    appointment.status = "Cancelled";
+    await appointment.save();
+
+    res.json({ message: "Appointment cancelled permanently", appointment });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Failed to cancel appointment", error: err });
+  }
+});
+
+// ✅ Delete appointment
 router.delete("/delete/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -105,9 +149,7 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
-
+// ✅ Add prescription
 router.put("/prescription", addPrescription);
 
 module.exports = router;
-
-router.put("/prescription", addPrescription);

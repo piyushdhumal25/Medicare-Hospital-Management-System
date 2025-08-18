@@ -12,7 +12,9 @@ const MyAppointments = () => {
       const email = userData.email;
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/appointments?email=${email}`);
+        const res = await axios.get(
+          `http://localhost:5000/api/appointments?email=${email}`
+        );
         console.log("Appointment data received:", res.data);
         setAppointments(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
@@ -39,6 +41,28 @@ const MyAppointments = () => {
     return `${base} bg-gray-100 text-gray-700`;
   };
 
+  // ✅ Cancel appointment function
+  const handleCancel = async (id, paymentStatus) => {
+    if (paymentStatus === "Paid") {
+      alert("⚠️ This appointment cannot be cancelled because payment is already done online.");
+      return;
+    }
+
+    try {
+      await axios.put(`http://localhost:5000/api/appointments/cancel/${id}`);
+
+      setAppointments((prev) =>
+        prev.map((appt) =>
+          appt._id === id ? { ...appt, status: "Cancelled" } : appt
+        )
+      );
+      alert("Appointment cancelled successfully.");
+    } catch (err) {
+      console.error("Failed to cancel appointment", err);
+      alert("Failed to cancel appointment. Please try again.");
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
       <h2 className="text-3xl font-extrabold text-blue-800 text-center mb-8 tracking-wide uppercase">
@@ -54,8 +78,9 @@ const MyAppointments = () => {
               <th className="py-3 px-6 text-left font-bold">Time</th>
               <th className="py-3 px-6 text-left font-bold">Reason</th>
               <th className="py-3 px-6 text-left font-bold">Status</th>
-              <th className="py-3 px-6 text-left font-bold">Payment</th> {/* ✅ New Column */}
-                <th className="py-3 px-6 text-left font-bold">Prescription</th>
+              <th className="py-3 px-6 text-left font-bold">Payment</th>
+              <th className="py-3 px-6 text-left font-bold">Prescription</th>
+              <th className="py-3 px-6 text-left font-bold">Actions</th>
             </tr>
           </thead>
           <tbody className="text-gray-800 text-sm font-medium divide-y divide-gray-200">
@@ -73,7 +98,9 @@ const MyAppointments = () => {
                     <td className="py-4 px-6">{appt.time}</td>
                     <td className="py-4 px-6">{appt.reason}</td>
                     <td className="py-4 px-6">
-                      <span className={statusBadge(appt.status)}>{appt.status}</span>
+                      <span className={statusBadge(appt.status)}>
+                        {appt.status}
+                      </span>
                     </td>
                     <td className="py-4 px-6">
                       <span className={paymentBadge(appt.paymentStatus)}>
@@ -81,32 +108,49 @@ const MyAppointments = () => {
                       </span>
                     </td>
                     <td className="py-4 px-6">
-                      {Array.isArray(appt.prescription) && appt.prescription.length > 0 ? (
+                      {Array.isArray(appt.prescription) &&
+                      appt.prescription.length > 0 ? (
                         <button
                           className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-semibold hover:bg-blue-700"
                           onClick={() => {
-                            console.log("Appointment data for prescription:", appt);
-                            
-                            // Get user data directly from localStorage
-                            const userData = JSON.parse(localStorage.getItem('user') || "{}");
-                            console.log("User data from localStorage:", userData);
-                            
-                            // Navigate to prescription view
-                            navigate('/prescription-view', { 
-                              state: { 
-                                prescription: appt.prescription, 
-                                doctorName: appt.doctorName, 
-                                date: appt.date, 
+                            const userData = JSON.parse(
+                              localStorage.getItem("user") || "{}"
+                            );
+
+                            navigate("/prescription-view", {
+                              state: {
+                                prescription: appt.prescription,
+                                doctorName: appt.doctorName,
+                                date: appt.date,
                                 time: appt.time,
-                                patientEmail: appt.patientEmail || userData.email // Use appointment's patient email or user email
-                              } 
+                                patientEmail:
+                                  appt.patientEmail || userData.email,
+                              },
                             });
                           }}
                         >
                           View
                         </button>
                       ) : (
-                        <span className="text-gray-400 italic">No prescription</span>
+                        <span className="text-gray-400 italic">
+                          No prescription
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 px-6">
+                      {appt.status !== "Cancelled" ? (
+                        <button
+                          className="px-3 py-1 bg-red-600 text-white rounded text-xs font-semibold hover:bg-red-700"
+                          onClick={() =>
+                            handleCancel(appt._id, appt.paymentStatus)
+                          }
+                        >
+                          Cancel
+                        </button>
+                      ) : (
+                        <span className="text-gray-400 italic">
+                           Cancelled
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -114,7 +158,7 @@ const MyAppointments = () => {
             ) : (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="8"
                   className="text-center py-6 text-gray-500 italic"
                 >
                   No appointments found.
@@ -124,7 +168,7 @@ const MyAppointments = () => {
           </tbody>
         </table>
       </div>
-  </div>
+    </div>
   );
 };
 
