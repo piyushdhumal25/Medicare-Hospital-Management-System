@@ -56,8 +56,8 @@ export default function LoginPage() {
       </div>
 
       {/* Right: Login Form */}
-      <div className="w-full md:w-[40%] flex items-center justify-center bg-white shadow-lg">
-        <div className="w-full px-8">
+      <div className="w-full md:w-[40%] flex items-center justify-center bg-white shadow-lg ">
+        <div className="w-full px-8 ">
           <h2 className="text-5xl font-bold text-center text-blue-600 mb-6">
             Login
           </h2>

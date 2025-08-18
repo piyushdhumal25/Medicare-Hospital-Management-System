@@ -87,7 +87,7 @@ const BookAppointment = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="min-h-screen pt-10 flex items-center justify-center bg-blue-50 px-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
           <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
             Book Appointment

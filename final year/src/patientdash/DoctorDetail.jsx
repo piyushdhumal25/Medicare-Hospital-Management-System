@@ -25,7 +25,7 @@ const DoctorDetail = ({ doctor }) => {
     <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6">
       {/* Doctor Basic Info */}
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-semibold text-gray-800">{doctor.name}</h2>
+        <h2 className="text-2xl font-semibold  text-cyan-600">{doctor.name}</h2>
         <p className="text-gray-600">
           {doctor.specialty} · {doctor.experience} yrs
         </p>

@@ -4,45 +4,18 @@ const DoctorCard = ({ doctor, onClick, isSelected }) => {
   return (
     <div
       onClick={onClick}
-      className={`p-4 rounded-lg shadow-md cursor-pointer ${
-        isSelected ? "border-2 border-cyan-500" : ""
-      }`}
+      className={`p-6 bg-white rounded-lg shadow-md transition-all duration-300 cursor-pointer 
+        ${isSelected ? "border-2 border-cyan-500 shadow-lg" : "border border-gray-200 hover:shadow-lg"}`}
     >
-      {/* Doctor Name */}
-      <h2 className="font-bold text-lg">{doctor.name}</h2>
-
-      {/* Specialty & Experience */}
-      <p>{doctor.specialty} • {doctor.experience} years</p>
-
-      
-      {/* Rating */}
-      <p><b>Rating:</b> ⭐ {doctor.rating}</p>
-
-      {/* Category */}
-      <p><b>Category:</b> {doctor.category}</p>
-
-      {/* Availability */}
-      <p><b>Availability:</b> {doctor.availability}</p>
-
-      {/* Education */}
-      <p><b>Education:</b> {doctor.education}</p>
-
-      {/* Certificate */}
-      <p><b>Certificate:</b> {doctor.certificate}</p>
-
-      {/* Available At */}
-      <div>
-        <b>Available At:</b>
-        {doctor.available && doctor.available.length > 0 ? (
-          <ul className="list-disc list-inside text-sm">
-            {doctor.available.map((place, index) => (
-              <li key={index}>{place}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500">Not Available</p>
-        )}
-      </div>
+      <h2 className="text-xl font-bold text-cyan-600">{doctor.name}</h2>
+      <p className="text-sm text-gray-600 mt-1">
+        {doctor.specialty} • {doctor.experience} 
+      </p>
+      <p className="text-sm text-gray-600 mt-2">
+        <b>Available:</b>{" "}
+        {Array.isArray(doctor.available) ? doctor.available.join(", ") : doctor.available}
+      </p>
+      {/* Price tag removed */}
     </div>
   );
 };
