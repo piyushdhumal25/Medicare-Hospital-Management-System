@@ -4,44 +4,30 @@ const DoctorCard = ({ doctor, onClick, isSelected }) => {
   return (
     <div
       onClick={onClick}
-      className={`p-4 rounded-lg shadow-md cursor-pointer ${
-        isSelected ? "border-2 border-cyan-500" : ""
-      }`}
+      className={`w-full max-w-xl p-5 rounded-xl flex flex-col md:flex-row items-start justify-between 
+        transition-all duration-300 cursor-pointer bg-gradient-to-r from-cyan-50 to-white 
+        ${isSelected ? "border-2 border-cyan-500 shadow-lg" : "border border-gray-200 hover:shadow-md"}`}
     >
-      {/* Doctor Name */}
-      <h2 className="font-bold text-lg">{doctor.name}</h2>
+      {/* Left Side - Doctor Info */}
+      <div className="flex-1">
+        <h2 className="font-bold text-xl text-gray-800">{doctor.name}</h2>
+        <p className="text-sm text-gray-600 mt-1">
+          {doctor.specialty} • {doctor.experience} yrs
+        </p>
 
-      {/* Specialty & Experience */}
-      <p>{doctor.specialty} • {doctor.experience} years</p>
+        <p className="text-sm text-gray-700 mt-2">
+          <b>Available:</b> {doctor.availability}
+        </p>
+      </div>
 
-      
-      {/* Rating */}
-      <p><b>Rating:</b> ⭐ {doctor.rating}</p>
-
-      {/* Category */}
-      <p><b>Category:</b> {doctor.category}</p>
-
-      {/* Availability */}
-      <p><b>Availability:</b> {doctor.availability}</p>
-
-      {/* Education */}
-      <p><b>Education:</b> {doctor.education}</p>
-
-      {/* Certificate */}
-      <p><b>Certificate:</b> {doctor.certificate}</p>
-
-      {/* Available At */}
-      <div>
-        <b>Available At:</b>
-        {doctor.available && doctor.available.length > 0 ? (
-          <ul className="list-disc list-inside text-sm">
-            {doctor.available.map((place, index) => (
-              <li key={index}>{place}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500">Not Available</p>
-        )}
+      {/* Right Side - Rating & Category */}
+      <div className="flex flex-col items-end mt-3 md:mt-0">
+        <span className="text-yellow-500 font-semibold text-lg">
+          ⭐ {doctor.rating}
+        </span>
+        <span className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium mt-2">
+          {doctor.category}
+        </span>
       </div>
     </div>
   );
