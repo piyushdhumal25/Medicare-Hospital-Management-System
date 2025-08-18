@@ -13,6 +13,7 @@ export default function PatientDashboard() {
   const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [category, setCategory] = useState("All");
+  const [query, setQuery] = useState("");   // ✅ search state
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -32,6 +33,7 @@ export default function PatientDashboard() {
     fetchDoctors();
   }, []);
 
+  // ✅ Category filter
   const filteredDoctors =
     category === "All"
       ? doctors
@@ -71,11 +73,14 @@ export default function PatientDashboard() {
             <MyAppointments />
           ) : (
             <>
-              <SearchBar />
+              {/* ✅ SearchBar with query */}
+              <SearchBar query={query} setQuery={setQuery} />
+
               <CategoryFilter category={category} setCategory={setCategory} />
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
                 <DoctorList
                   doctors={filteredDoctors}
+                  query={query}   // ✅ pass query here
                   onSelectDoctor={setSelectedDoctor}
                   selectedDoctor={selectedDoctor}
                 />
