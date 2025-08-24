@@ -1,4 +1,5 @@
-const express = require("express");
+
+  const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
@@ -9,7 +10,14 @@ const Appointment = require("./models/Appointments");
 console.log('Starting server...');
 const app = express();
 
-app.use(cors());
+// ✅ CORS Setup - Add your Vercel frontend URL here
+app.use(cors({
+  origin: [
+    "http://localhost:5173",   // local dev
+    "medicare-hospital-management-system-oizd-egz09vb4w.vercel.app" // ✅ change this to your vercel frontend url
+  ],
+  credentials: true
+}));
 
 // Log all incoming requests
 app.use((req, res, next) => {
@@ -21,6 +29,11 @@ app.use((req, res, next) => {
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// ✅ Root route
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running successfully! Use /api/... endpoints.");
+});
 
 // Test route to verify server is running
 app.get('/api/test', (req, res) => {
@@ -39,13 +52,11 @@ app.get('/api/routes', (req, res) => {
   const routes = [];
   app._router.stack.forEach((middleware) => {
     if (middleware.route) {
-      // routes registered directly on the app
       routes.push({
         path: middleware.route.path,
         methods: Object.keys(middleware.route.methods)
       });
     } else if (middleware.name === 'router') {
-      // router middleware
       middleware.handle.stack.forEach((handler) => {
         if (handler.route) {
           routes.push({
@@ -59,7 +70,7 @@ app.get('/api/routes', (req, res) => {
   res.json(routes);
 });
 
-// Connect to MongoDB once
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/appointmentsDB", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -70,37 +81,34 @@ mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/appointment
   process.exit(1);
 });
 
+// Routes
 const authRoutes = require("./routes/Auth");
 app.use("/api", authRoutes);
 
-const adminRoutes = require("./routes/adminRoutes"); // ✅ this must match filename
-app.use("/api", adminRoutes); // ✅ must be this line
+const adminRoutes = require("./routes/adminRoutes");
+app.use("/api", adminRoutes);
 
 const doctorRoutes = require("./routes/DoctorRoutes");
 app.use("/api", doctorRoutes);
- 
+
 const appointmentRoutes = require("./routes/AppointmentRoutes");
 app.use("/api/appointments", appointmentRoutes);
+
+const donorRoutes = require('./routes/donorRoutes');
+app.use("/api/donors", donorRoutes);
+console.log('✅ Donor routes mounted at /api/donors');
+
+const PaymentRoutes = require("./routes/PaymentRoutes");
+app.use("/api/payment", PaymentRoutes);
+
+app.use("/api/contact", require("./routes/contactRoutes"));
+app.use("/api", require("./routes/chatbotRoutes"));
 
 // Debug middleware
 app.use((req, res, next) => {
   console.log(`📝 ${req.method} ${req.path}`);
   next();
 });
-
-// Donor routes
-const donorRoutes = require('./routes/donorRoutes');
-app.use("/api/donors", donorRoutes);
-console.log('✅ Donor routes mounted at /api/donors');
-
-// Payment routes
-const PaymentRoutes = require("./routes/PaymentRoutes");
-app.use("/api/payment", PaymentRoutes);
-
-
-// Additional Routes
-app.use("/api/contact", require("./routes/contactRoutes"));
-app.use("/api", require("./routes/chatbotRoutes"));
 
 // 404 handler
 app.use((req, res) => {
@@ -112,15 +120,12 @@ app.use((req, res) => {
   }
 });
 
-// Global error handling middleware - only one instance needed
+// Global error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server Error:', err);
-  
-  // Only send response if one hasn't been sent already
+
   if (!res.headersSent) {
-    // Don't send error details in production
     const error = process.env.NODE_ENV === 'development' ? err : {};
-    
     res.status(err.status || 500).json({
       success: false,
       message: err.message || 'Internal server error',
@@ -137,4 +142,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
-
