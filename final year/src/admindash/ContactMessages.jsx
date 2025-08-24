@@ -12,7 +12,7 @@ export default function ContactMessages() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/contact")
+      .get("https://medicare-hospital-management-system-3.onrender.com/api/contact")
       .then((res) => {
         const sorted = [...res.data].sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)

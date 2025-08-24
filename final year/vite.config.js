@@ -6,7 +6,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'http://localhost:5000', // Change 5000 to your backend port if different
+      '/api': 'https://medicare-hospital-management-system-3.onrender.com', // Change 5000 to your backend port if different
     },
   },
 })

@@ -117,7 +117,7 @@ export default function Donate() {
       console.log('Submitting data:', formattedData);
 
       // Submit the form
-      const response = await fetch("http://localhost:5000/api/donors/create", {
+      const response = await fetch("https://medicare-hospital-management-system-3.onrender.com/api/donors/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

@@ -18,7 +18,7 @@ export default function SignUp() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/register", formData);
+      await axios.post("https://medicare-hospital-management-system-3.onrender.com/api/register", formData);
       setMessage("Registration successful 🎉");
       setFormData({ username: "", email: "", password: "", role: "patient" });
     } catch (err) {

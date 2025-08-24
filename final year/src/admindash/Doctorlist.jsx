@@ -11,7 +11,7 @@ const DoctorsList = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/doctors");
+        const res = await axios.get("https://medicare-hospital-management-system-3.onrender.com/api/doctors");
         setDoctors(res.data);
       } catch (err) {
         console.error("Failed to load doctors", err);
@@ -94,9 +94,9 @@ const DoctorsList = () => {
                 <button
                   onClick={async () => {
                     try {
-                      await axios.patch(`http://localhost:5000/api/admin/verify-doctor/${doctor.id}`);
+                      await axios.patch(`https://medicare-hospital-management-system-3.onrender.com/api/admin/verify-doctor/${doctor.id}`);
                       alert("Doctor verified!");
-                      const res = await axios.get("http://localhost:5000/api/doctors");
+                      const res = await axios.get("https://medicare-hospital-management-system-3.onrender.com/api/doctors");
                       setDoctors(res.data);
                     } catch (err) {
                       console.error("Failed to verify doctor", err);

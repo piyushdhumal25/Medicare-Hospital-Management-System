@@ -11,7 +11,7 @@ export const login = async ({ email, password }) => {
 
   // Normal users: call backend API
   try {
-    const res = await axios.post("http://localhost:5000/auth/login", {
+    const res = await axios.post("https://medicare-hospital-management-system-3.onrender.com/auth/login", {
       email,
       password,
     });

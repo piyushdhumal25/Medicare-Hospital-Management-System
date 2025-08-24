@@ -22,7 +22,7 @@ const DoctorDashboard = () => {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/doctors");
+        const res = await fetch("https://medicare-hospital-management-system-3.onrender.com/api/doctors");
         const data = await res.json();
         const foundDoctor = data.find((doc) => doc.email === loggedInDoctorEmail);
         setDoctor(foundDoctor || null);
@@ -42,7 +42,7 @@ const DoctorDashboard = () => {
       if (!loggedInDoctorEmail) return;
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/appointments/doctor?email=${loggedInDoctorEmail}`
+          `https://medicare-hospital-management-system-3.onrender.com/api/appointments/doctor?email=${loggedInDoctorEmail}`
         );
         setDoctorAppointments(res.data);
 

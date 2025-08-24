@@ -21,7 +21,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/doctors');
+        const response = await fetch('https://medicare-hospital-management-system-3.onrender.com/api/doctors');
         if (!response.ok) throw new Error("Failed to fetch doctors");
         const data = await response.json();
         setTotalDoctors(data.length);
@@ -32,7 +32,7 @@ const AdminDashboard = () => {
 
     const fetchPatients = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/patients');
+        const response = await fetch('https://medicare-hospital-management-system-3.onrender.com/api/patients');
         if (!response.ok) throw new Error("Failed to fetch patients");
         const data = await response.json();
         setTotalPatients(data.length);
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
 
     const fetchAppointments = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/appointments/all');
+        const response = await fetch('https://medicare-hospital-management-system-3.onrender.com/api/appointments/all');
         if (!response.ok) throw new Error("Failed to fetch appointments");
         const data = await response.json();
         setTotalAppointments(data.length);

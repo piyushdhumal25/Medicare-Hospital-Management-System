@@ -11,7 +11,7 @@ const DonorsList = () => {
   const fetchDonors = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/donors");
+      const res = await axios.get("https://medicare-hospital-management-system-3.onrender.com/api/donors");
       setDonors(res.data);
     } catch (error) {
       console.error("Failed to fetch donors", error);
@@ -28,8 +28,8 @@ const DonorsList = () => {
   const deleteDonor = async (id) => {
     if (!window.confirm("Are you sure you want to delete this donor?")) return;
 
-    try {
-      await axios.delete(`http://localhost:5000/api/donors/delete/${id}`);
+    try {https://medicare-hospital-management-system-3.onrender.com
+      await axios.delete(`/api/donors/delete/${id}`);
       alert("Donor deleted successfully");
       fetchDonors();
     } catch (error) {

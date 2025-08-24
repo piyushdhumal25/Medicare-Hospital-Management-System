@@ -12,7 +12,7 @@ const AllDoctors = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/doctors");
+        const res = await axios.get("https://medicare-hospital-management-system-3.onrender.com/api/doctors");
         setDoctors(res.data);
       } catch (error) {
         console.error("Error fetching doctors:", error);

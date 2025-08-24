@@ -13,7 +13,7 @@ const MyAppointments = () => {
 
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/appointments?email=${email}`
+          `https://medicare-hospital-management-system-3.onrender.com/api/appointments?email=${email}`
         );
         console.log("Appointment data received:", res.data);
         setAppointments(Array.isArray(res.data) ? res.data : []);
@@ -49,7 +49,7 @@ const MyAppointments = () => {
     }
 
     try {
-      await axios.put(`http://localhost:5000/api/appointments/cancel/${id}`);
+      await axios.put(`https://medicare-hospital-management-system-3.onrender.com/api/appointments/cancel/${id}`);
 
       setAppointments((prev) =>
         prev.map((appt) =>

@@ -41,7 +41,7 @@ const BookAppointment = () => {
 
     if (paymentMethod === "offline") {
       try {
-        await axios.post("http://localhost:5000/api/appointments/create", {
+        await axios.post("https://medicare-hospital-management-system-3.onrender.com/api/appointments/create", {
           ...appointmentData,
           paymentStatus: "Unpaid",
         });
@@ -65,7 +65,7 @@ const BookAppointment = () => {
         );
 
         const res = await axios.post(
-          "http://localhost:5000/api/payment/create-checkout-session",
+          "https://medicare-hospital-management-system-3.onrender.com/api/payment/create-checkout-session",
           {
             doctorName: doctor.name,
             amount: 1500,
