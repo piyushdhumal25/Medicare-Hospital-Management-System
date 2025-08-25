@@ -1,34 +1,35 @@
-
-  const express = require("express");
+const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const path = require("path");
-const connectDB = require("./config/db");
+
+// Models
 const Appointment = require("./models/Appointments");
 
-console.log('Starting server...');
+console.log("🚀 Starting server...");
 const app = express();
 
 // ✅ CORS Setup - Add your Vercel frontend URL here
-app.use(cors({
-  origin: [
-    "http://localhost:5173",   // local dev
-    "medicare-hospital-management-system-oizd-egz09vb4w.vercel.app" // ✅ change this to your vercel frontend url
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // local dev
+      "https://medicare-hospital-management-system-oizd-egz09vb4w.vercel.app", // Vercel frontend
+    ],
+    credentials: true,
+  })
+);
 
 // Log all incoming requests
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
-  console.log('Headers:', req.headers);
   next();
 });
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // ✅ Root route
 app.get("/", (req, res) => {
@@ -36,32 +37,32 @@ app.get("/", (req, res) => {
 });
 
 // Test route to verify server is running
-app.get('/api/test', (req, res) => {
+app.get("/api/test", (req, res) => {
   res.json({
     success: true,
-    message: 'Server is running',
+    message: "Server is running",
     routes: {
-      donors: '/api/donors',
-      test: '/api/test'
-    }
+      donors: "/api/donors",
+      test: "/api/test",
+    },
   });
 });
 
 // Debug route: List all registered endpoints
-app.get('/api/routes', (req, res) => {
+app.get("/api/routes", (req, res) => {
   const routes = [];
   app._router.stack.forEach((middleware) => {
     if (middleware.route) {
       routes.push({
         path: middleware.route.path,
-        methods: Object.keys(middleware.route.methods)
+        methods: Object.keys(middleware.route.methods),
       });
-    } else if (middleware.name === 'router') {
+    } else if (middleware.name === "router") {
       middleware.handle.stack.forEach((handler) => {
         if (handler.route) {
           routes.push({
             path: handler.route.path,
-            methods: Object.keys(handler.route.methods)
+            methods: Object.keys(handler.route.methods),
           });
         }
       });
@@ -71,15 +72,16 @@ app.get('/api/routes', (req, res) => {
 });
 
 // ✅ Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/appointmentsDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("✅ MongoDB connected successfully"))
-.catch((err) => {
-  console.error("❌ MongoDB connection error:", err);
-  process.exit(1);
-});
+const MONGO_URI =
+  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/appointmentsDB";
+
+mongoose
+  .connect(MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected successfully"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err.message);
+    process.exit(1);
+  });
 
 // Routes
 const authRoutes = require("./routes/Auth");
@@ -94,9 +96,9 @@ app.use("/api", doctorRoutes);
 const appointmentRoutes = require("./routes/AppointmentRoutes");
 app.use("/api/appointments", appointmentRoutes);
 
-const donorRoutes = require('./routes/donorRoutes');
+const donorRoutes = require("./routes/donorRoutes");
 app.use("/api/donors", donorRoutes);
-console.log('✅ Donor routes mounted at /api/donors');
+console.log("✅ Donor routes mounted at /api/donors");
 
 const PaymentRoutes = require("./routes/PaymentRoutes");
 app.use("/api/payment", PaymentRoutes);
@@ -115,24 +117,23 @@ app.use((req, res) => {
   if (!res.headersSent) {
     res.status(404).json({
       success: false,
-      message: 'Route not found'
+      message: "Route not found",
     });
   }
 });
 
 // Global error handling middleware
 app.use((err, req, res, next) => {
-  console.error('Server Error:', err);
+  console.error("Server Error:", err);
 
   if (!res.headersSent) {
-    const error = process.env.NODE_ENV === 'development' ? err : {};
     res.status(err.status || 500).json({
       success: false,
-      message: err.message || 'Internal server error',
-      error: process.env.NODE_ENV === 'development' ? {
-        message: error.message,
-        stack: error.stack
-      } : undefined
+      message: err.message || "Internal server error",
+      error:
+        process.env.NODE_ENV === "development"
+          ? { message: err.message, stack: err.stack }
+          : undefined,
     });
   }
 });
